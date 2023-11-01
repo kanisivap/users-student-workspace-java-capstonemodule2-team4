@@ -69,19 +69,6 @@ public class AuthenticationController {
         }
     }
 
-    @ResponseStatus(HttpStatus.FOUND)
-    @RequestMapping(path = "/balance/{id}", method = RequestMethod.GET)
-    public BigDecimal getBalance(@PathVariable int id) {
-        try {
-            BigDecimal balance = userDao.getBalance(id);
-            if (balance == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid user.");
-            }
-            return balance;
-        } catch (DaoException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Not a valid user.");
-        }
-    }
 
 }
 
