@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
+
+import java.math.BigDecimal;
 
 public class AuthenticationService {
 
@@ -47,9 +50,25 @@ public class AuthenticationService {
         return success;
     }
 
+    public BigDecimal getBalance(AuthenticatedUser user) {
+        BigDecimal balance = null;
+        try {
+            balance = restTemplate.getForObject(baseUrl + "balance/" + user.getUser().getId(), BigDecimal.class, HttpMethod.GET);
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return balance;
+    }
+
     private HttpEntity<UserCredentials> createCredentialsEntity(UserCredentials credentials) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity<>(credentials, headers);
+    }
+
+    private HttpEntity<AuthenticatedUser> createAuthenticatedUserEntity(AuthenticatedUser user) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(user, headers);
     }
 }

@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exception.DaoException;
+import com.techelevator.tenmo.model.LoginResponseDto;
 import com.techelevator.tenmo.model.RegisterUserDto;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -91,6 +92,19 @@ public class JdbcUserDao implements UserDao {
             throw new DaoException("Data integrity violation", e);
         }
         return newUser;
+    }
+
+    public BigDecimal getBalance(int id){
+        String sql = "SELECT balance FROM account WHERE user_id = ?";
+        BigDecimal result = null;
+        try {
+            result = jdbcTemplate.queryForObject(sql, BigDecimal.class, id);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+        return result;
     }
 
     private User mapRowToUser(SqlRowSet rs) {
