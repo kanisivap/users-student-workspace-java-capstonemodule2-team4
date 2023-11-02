@@ -38,4 +38,19 @@ public class JdbcAccountDao implements AccountDao {
         return result;
     }
 
+    public void updateBalance(int id, BigDecimal amount){
+        String sql = "UPDATE account SET balance = ? WHERE user_id = ?;";
+        int numOfRows = 0;
+        try{
+            numOfRows = jdbcTemplate.update(sql, amount, id);
+            if (numOfRows == 0) {
+                throw new DaoException("Zero rows affected, expected one");
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+    }
+
 }
