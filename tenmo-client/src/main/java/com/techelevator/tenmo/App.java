@@ -128,8 +128,8 @@ public class App {
         System.out.println("Enter amount: ");
         BigDecimal amount = new BigDecimal(input.next());
 		accountService.subtractFromBalance(currentUser, amount);
-        accountService.addToBalance(id, amount);
 
+        accountService.addToBalance(id, amount);
 	}
 
 	private void requestBucks() {
