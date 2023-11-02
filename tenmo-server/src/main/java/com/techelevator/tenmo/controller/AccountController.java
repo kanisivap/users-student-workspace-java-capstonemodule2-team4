@@ -7,6 +7,7 @@ import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.LoginResponseDto;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -31,9 +32,11 @@ import java.util.List;
 public class AccountController {
 
     private final AccountDao accountDao;
+    private final UserDao userDao;
 
-    public AccountController(AccountDao accountDao) {
+    public AccountController(AccountDao accountDao, UserDao userDao) {
         this.accountDao = accountDao;
+        this.userDao = userDao;
     }
 
     @ResponseStatus(HttpStatus.FOUND)
@@ -54,7 +57,7 @@ public class AccountController {
     @RequestMapping(path = "/account", method = RequestMethod.GET)
     public List<User> listUsers() {
 
-        return JdbcUserDao.getUsers(); //call the getUsers method to populate list
+        return userDao.getUsers(); //call the getUsers method to populate list
     }
     
     @ResponseStatus(HttpStatus.ACCEPTED)

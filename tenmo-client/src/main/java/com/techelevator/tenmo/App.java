@@ -6,7 +6,10 @@ import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
+import com.techelevator.tenmo.model.User;
+
 import java.math.BigDecimal;
+import java.util.Scanner;
 
 public class App {
 
@@ -17,6 +20,8 @@ public class App {
     private final AccountService accountService = new AccountService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
+
+    Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
         App app = new App();
@@ -105,7 +110,22 @@ public class App {
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
+        //List all users
+        User[] users = accountService.listUsers(currentUser);
+        System.out.println("--------------------------------------");
+        System.out.println("Users");
+        System.out.println("ID           Name");
+        System.out.println("--------------------------------------");
+        for (User user: users) {
+            System.out.println(user.getId() + "         " + user.getUsername());
+        }
+
+        //Prompt user to input ID of user to transfer to
+        System.out.println("Enter ID of user you are sending to (0 to cancel):");
+        int id = Integer.parseInt(input.next()); //Take user input and store it as new variable, id
+
+        System.out.println("Enter amount: ");
+
 
 	}
 
