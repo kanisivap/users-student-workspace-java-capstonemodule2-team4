@@ -6,11 +6,14 @@ import org.springframework.lang.NonNull;
 import java.math.BigDecimal;
 
 public class Transfer {
+    private int transferId;
     private int transferTypeId;
     private int transferStatusId;
     private int accountFrom;
     private int accountTo;
     private BigDecimal amount;
+
+    public Transfer(){}
 
     public Transfer(int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount){
         this.transferTypeId = transferTypeId;
@@ -18,6 +21,14 @@ public class Transfer {
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
         this.amount = amount;
+    }
+
+    public int getTransferId() {
+        return transferId;
+    }
+
+    public void setTransferId(int transferId) {
+        this.transferId = transferId;
     }
 
     public int getTransferTypeId() {

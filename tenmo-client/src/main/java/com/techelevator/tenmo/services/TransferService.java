@@ -16,6 +16,7 @@ import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class TransferService {
 
@@ -24,6 +25,19 @@ public class TransferService {
 
     public TransferService(String url) {
         this.baseUrl = url;
+    }
+
+    public Transfer[] getTransfers(AuthenticatedUser user) {
+        HttpEntity<AuthenticatedUser> entity = createAuthenticatedUserEntity(user);
+        Transfer[] transferList = null;
+        try {
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer", HttpMethod.GET, entity, Transfer[].class);
+            transferList = response.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+
+        return transferList;
     }
 
     public Transfer createTransfer(Transfer transfer) {
@@ -37,6 +51,7 @@ public class TransferService {
             BasicLogger.log(e.getMessage());
         }
         return newTransfer;
+
     }
 
 
@@ -45,6 +60,12 @@ public class TransferService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity<>(transfer, headers);
+    }
+
+    private HttpEntity<AuthenticatedUser> createAuthenticatedUserEntity(AuthenticatedUser user) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(user, headers);
     }
 
 }
