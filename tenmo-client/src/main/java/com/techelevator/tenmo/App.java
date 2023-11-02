@@ -1,12 +1,14 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
 import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.services.TransferService;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
@@ -18,6 +20,7 @@ public class App {
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
     private final AccountService accountService = new AccountService(API_BASE_URL);
+    private final TransferService transferService = new TransferService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
 
@@ -145,6 +148,8 @@ public class App {
             System.out.println("Cannot send more money than is in account.");
         } else {
             accountService.addToBalance(id, amount);
+            Transfer log = new Transfer(2, 2, currentUser.getUser().getId(), id, amount);
+            transferService.createTransfer(log);
         }
 	}
 
