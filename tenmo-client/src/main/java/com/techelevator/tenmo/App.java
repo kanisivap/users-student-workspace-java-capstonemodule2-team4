@@ -124,12 +124,15 @@ public class App {
         //Prompt user to input ID of user to transfer to
         System.out.println("Enter ID of user you are sending to (0 to cancel):");
         int id = Integer.parseInt(input.next()); //Take user input and store it as new variable, id
-
+        BigDecimal balance = accountService.getBalance(currentUser);
         System.out.println("Enter amount: ");
         BigDecimal amount = new BigDecimal(input.next());
 		accountService.subtractFromBalance(currentUser, amount);
 
         accountService.addToBalance(id, amount);
+        if(balance.compareTo(accountService.getBalance(currentUser)) == 0){
+            System.out.println("Cannot send more money than is in account.");
+        }
 	}
 
 	private void requestBucks() {

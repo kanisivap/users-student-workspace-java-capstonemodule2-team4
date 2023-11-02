@@ -58,18 +58,21 @@ public class JdbcAccountDao implements AccountDao {
 
     public boolean subtractFromBalance(int id, BigDecimal amount){
         String sql = "UPDATE account SET balance = balance - ? WHERE user_id = ?;";
+        BigDecimal currentBalance = getBalance(id);
         boolean success = false;
-        int numOfRows = 0;
-        try {
-            numOfRows = jdbcTemplate.update(sql, amount, id);
-            if (numOfRows == 0) {
-                throw new DaoException("Zero rows affected, expected one");
+        if(currentBalance.subtract(amount).compareTo(BigDecimal.ZERO) >= 0) {
+            int numOfRows = 0;
+            try {
+                numOfRows = jdbcTemplate.update(sql, amount, id);
+                if (numOfRows == 0) {
+                    throw new DaoException("Zero rows affected, expected one");
+                }
+                success = true;
+            } catch (CannotGetJdbcConnectionException e) {
+                throw new DaoException("Unable to connect to server or database", e);
+            } catch (DataIntegrityViolationException e) {
+                throw new DaoException("Data integrity violation", e);
             }
-            success = true;
-        } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Unable to connect to server or database", e);
-        } catch (DataIntegrityViolationException e) {
-            throw new DaoException("Data integrity violation", e);
         }
         return success;
     }
