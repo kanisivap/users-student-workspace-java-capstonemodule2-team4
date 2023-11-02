@@ -5,7 +5,7 @@ import javax.validation.Valid;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.exception.DaoException;
-import com.techelevator.tenmo.model.LoginResponseDto;
+import com.techelevator.tenmo.model.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,9 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.LoginDto;
-import com.techelevator.tenmo.model.RegisterUserDto;
-import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,6 +34,37 @@ public class AccountController {
     public AccountController(AccountDao accountDao, UserDao userDao) {
         this.accountDao = accountDao;
         this.userDao = userDao;
+    }
+
+    @ResponseStatus(HttpStatus.FOUND)
+    @RequestMapping(path = "/user/{id}", method = RequestMethod.GET)
+    public User getUserById(@PathVariable int id){
+        User user = null;
+        try {
+            user = userDao.getUserById(id);
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User registration failed.");
+            }
+        } catch (DaoException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User registration failed.");
+        }
+        return user;
+    }
+
+    @ResponseStatus(HttpStatus.FOUND)
+    @RequestMapping(path = "/account/{id}", method = RequestMethod.GET)
+    public AccountDto getAccountById(@PathVariable int id) {
+        AccountDto account = null;
+        try {
+            account = accountDao.getAccountById(id);
+            if (account == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid user.");
+            }
+
+        } catch (DaoException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Not a valid user.");
+        }
+        return account;
     }
 
     @ResponseStatus(HttpStatus.FOUND)
