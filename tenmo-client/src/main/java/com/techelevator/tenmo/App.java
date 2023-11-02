@@ -104,6 +104,21 @@ public class App {
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
+        Transfer[] transfers = transferService.getTransfers(currentUser);
+        System.out.println("--------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID           From/To            Amount");
+        System.out.println("--------------------------------------");
+        for (Transfer transfer : transfers) {
+            //TODO: change transfer account ID's below to user names displayed
+            //TODO: create account model under Server to access accounts by UserID
+
+            if (transfer.getAccountFrom() == (currentUser.getUser().getId() + 1000)) {
+                System.out.println(transfer.getTransferId() + "         To: " + transfer.getAccountTo() + "           $" + transfer.getAmount());
+            } else {
+                System.out.println(transfer.getTransferId() + "         From: " + transfer.getAccountFrom() + "         $" + transfer.getAmount());
+            }
+        }
 		
 	}
 

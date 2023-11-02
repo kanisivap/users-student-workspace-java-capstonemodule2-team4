@@ -17,6 +17,7 @@ import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Controller to authenticate users.
@@ -30,10 +31,18 @@ public class TransferController {
         this.transferDao = transferDao;
     }
 
+    @ResponseStatus(HttpStatus.FOUND)
+    @RequestMapping(path = "/transfer", method = RequestMethod.GET)
+    public List<TransferDto> getTransfers() {
+        List<TransferDto> transferDtoList = null;
+        try {
+            transferDtoList = transferDao.getTransfers();
+        } catch (DaoException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transfer list not found.");
+        }
 
-    //TODO create transferDto
-    //TODO create transferDao and Jdbc
-    //TODO call these in client transfer requests
+        return transferDtoList;
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/transfer", method = RequestMethod.POST)
