@@ -48,12 +48,28 @@ public class AccountController {
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @RequestMapping(path = "/balance/{id}", method = RequestMethod.PUT)
-    public void updateBalance(@PathVariable int id, BigDecimal amount) {
+    @RequestMapping(path = "/balance/{id}/add", method = RequestMethod.PUT)
+    public boolean addToBalance(@RequestBody BigDecimal amount, @PathVariable int id) {
+        boolean success = false;
         try{
-            accountDao.updateBalance(id, amount);
+            accountDao.addToBalance(id, amount);
+            success = true;
         } catch (DaoException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Not a valid user.");
         }
+        return success;
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @RequestMapping(path = "/balance/{id}/subtract", method = RequestMethod.PUT)
+    public boolean subtractFromBalance(@RequestBody BigDecimal amount, @PathVariable int id) {
+        boolean success = false;
+        try{
+            accountDao.subtractFromBalance(id, amount);
+            success = true;
+        } catch (DaoException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Not a valid user.");
+        }
+        return success;
     }
 }

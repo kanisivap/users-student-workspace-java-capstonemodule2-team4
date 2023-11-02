@@ -35,12 +35,25 @@ public class AccountService {
         return balance;
     }
 
-    public void updateBalance(AuthenticatedUser user, BigDecimal amount){
+    public boolean addToBalance(int id, BigDecimal amount){
+        boolean success = false;
         try{
-            restTemplate.put(baseUrl + "balance/" + user.getUser().getId(), amount, HttpMethod.PUT);
+            restTemplate.put(baseUrl + "balance/" + id + "/add", amount, HttpMethod.PUT);
+            success = true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
+        return success;
+    }
+    public boolean subtractFromBalance(AuthenticatedUser user, BigDecimal amount){
+        boolean success = false;
+        try{
+            restTemplate.put(baseUrl + "balance/" + user.getUser().getId() + "/subtract", amount, HttpMethod.PUT);
+            success = true;
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return success;
     }
 
     private HttpEntity<AuthenticatedUser> createAuthenticatedUserEntity(AuthenticatedUser user) {

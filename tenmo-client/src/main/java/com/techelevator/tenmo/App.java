@@ -7,6 +7,7 @@ import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
 import java.math.BigDecimal;
+import java.util.Scanner;
 
 public class App {
 
@@ -79,7 +80,7 @@ public class App {
                 sendBucks();
             } else if (menuSelection == 5) {
                 requestBucks();
-            } else if (menuSelection == 0) {
+            }else if (menuSelection == 0) {
                 continue;
             } else {
                 System.out.println("Invalid Selection");
@@ -106,12 +107,18 @@ public class App {
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+        int id = Integer.parseInt(input.next());
+        System.out.println("Enter amount: ");
+        BigDecimal amount = new BigDecimal(input.next());
+		accountService.subtractFromBalance(currentUser, amount);
+
+        accountService.addToBalance(id, amount);
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }
