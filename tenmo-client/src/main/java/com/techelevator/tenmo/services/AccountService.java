@@ -61,4 +61,16 @@ public class AccountService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity<>(user, headers);
     }
+
+    public User[] listUsers(AuthenticatedUser user) {
+        User[] users = null;
+        try {
+            ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "account",
+                    HttpMethod.GET, createAuthenticatedUserEntity(user), User[].class);
+            users = response.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return users;
+    }
 }

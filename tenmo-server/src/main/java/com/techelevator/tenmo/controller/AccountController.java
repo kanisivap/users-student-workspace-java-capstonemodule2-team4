@@ -3,9 +3,11 @@ package com.techelevator.tenmo.controller;
 import javax.validation.Valid;
 
 import com.techelevator.tenmo.dao.AccountDao;
+import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.LoginResponseDto;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -20,6 +22,8 @@ import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller to authenticate users.
@@ -28,9 +32,11 @@ import java.math.BigDecimal;
 public class AccountController {
 
     private final AccountDao accountDao;
+    private final UserDao userDao;
 
-    public AccountController(AccountDao accountDao) {
+    public AccountController(AccountDao accountDao, UserDao userDao) {
         this.accountDao = accountDao;
+        this.userDao = userDao;
     }
 
     @ResponseStatus(HttpStatus.FOUND)
@@ -47,6 +53,13 @@ public class AccountController {
         }
     }
 
+    //Method to list user IDs + user names, excluding self
+    @RequestMapping(path = "/account", method = RequestMethod.GET)
+    public List<User> listUsers() {
+
+        return userDao.getUsers(); //call the getUsers method to populate list
+    }
+    
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/balance/{id}/add", method = RequestMethod.PUT)
     public boolean addToBalance(@RequestBody BigDecimal amount, @PathVariable int id) {
