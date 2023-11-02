@@ -16,44 +16,36 @@ import com.techelevator.tenmo.model.UserCredentials;
 
 import java.math.BigDecimal;
 
-public class AuthenticationService {
+public class AccountService {
 
     private final String baseUrl;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public AuthenticationService(String url) {
+    public AccountService(String url) {
         this.baseUrl = url;
     }
 
-    public AuthenticatedUser login(UserCredentials credentials) {
-        HttpEntity<UserCredentials> entity = createCredentialsEntity(credentials);
-        AuthenticatedUser user = null;
+    public BigDecimal getBalance(AuthenticatedUser user) {
+        BigDecimal balance = null;
         try {
-            ResponseEntity<AuthenticatedUser> response =
-                    restTemplate.exchange(baseUrl + "login", HttpMethod.POST, entity, AuthenticatedUser.class);
-            user = response.getBody();
+            balance = restTemplate.getForObject(baseUrl + "balance/" + user.getUser().getId(), BigDecimal.class, HttpMethod.GET);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
-        return user;
+        return balance;
     }
 
-    public boolean register(UserCredentials credentials) {
-        HttpEntity<UserCredentials> entity = createCredentialsEntity(credentials);
-        boolean success = false;
-        try {
-            restTemplate.exchange(baseUrl + "register", HttpMethod.POST, entity, Void.class);
-            success = true;
+    public void updateBalance(AuthenticatedUser user, BigDecimal amount){
+        try{
+            restTemplate.put(baseUrl + "balance/" + user.getUser().getId(), amount, HttpMethod.PUT);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
-        return success;
     }
 
-    private HttpEntity<UserCredentials> createCredentialsEntity(UserCredentials credentials) {
+    private HttpEntity<AuthenticatedUser> createAuthenticatedUserEntity(AuthenticatedUser user) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity<>(credentials, headers);
+        return new HttpEntity<>(user, headers);
     }
-
 }
