@@ -84,7 +84,7 @@ public class App {
                 sendBucks();
             } else if (menuSelection == 5) {
                 requestBucks();
-            } else if (menuSelection == 0) {
+            }else if (menuSelection == 0) {
                 continue;
             } else {
                 System.out.println("Invalid Selection");
@@ -110,6 +110,7 @@ public class App {
 	}
 
 	private void sendBucks() {
+
         //List all users
         User[] users = accountService.listUsers(currentUser);
         System.out.println("--------------------------------------");
@@ -125,13 +126,16 @@ public class App {
         int id = Integer.parseInt(input.next()); //Take user input and store it as new variable, id
 
         System.out.println("Enter amount: ");
+        BigDecimal amount = new BigDecimal(input.next());
+		accountService.subtractFromBalance(currentUser, amount);
 
-
+        accountService.addToBalance(id, amount);
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }
