@@ -55,6 +55,15 @@ public class AccountController {
     public List<User> listUsers() {
 
         return JdbcUserDao.getUsers(); //call the getUsers method to populate list
-
+    }
+    
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @RequestMapping(path = "/balance/{id}", method = RequestMethod.PUT)
+    public void updateBalance(@PathVariable int id, BigDecimal amount) {
+        try{
+            accountDao.updateBalance(id, amount);
+        } catch (DaoException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Not a valid user.");
+        }
     }
 }
