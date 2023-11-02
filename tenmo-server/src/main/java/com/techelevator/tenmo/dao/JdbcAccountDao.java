@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exception.DaoException;
+import com.techelevator.tenmo.model.AccountDto;
 import com.techelevator.tenmo.model.LoginResponseDto;
 import com.techelevator.tenmo.model.RegisterUserDto;
 import com.techelevator.tenmo.model.User;
@@ -25,8 +26,25 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
+    public AccountDto getAccountById(int id){
+        String sql = "SELECT * FROM account WHERE account_id = ?;";
+        AccountDto account = null;
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+            if(results.next()){
+                account = mapRowToAccount(results);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+        return account;
+    }
+
+    @Override
     public BigDecimal getBalance(int id){
-        String sql = "SELECT balance FROM account WHERE user_id = ?";
+        String sql = "SELECT balance FROM account WHERE user_id = ?;";
         BigDecimal result = null;
         try {
             result = jdbcTemplate.queryForObject(sql, BigDecimal.class, id);
@@ -77,4 +95,11 @@ public class JdbcAccountDao implements AccountDao {
         return success;
     }
 
+    public AccountDto mapRowToAccount(SqlRowSet rs){
+        AccountDto account = new AccountDto();
+        account.setAccountId(rs.getInt("account_id"));
+        account.setUserId(rs.getInt("user_id"));
+        account.setBalance(rs.getBigDecimal("balance"));
+        return account;
+    }
 }

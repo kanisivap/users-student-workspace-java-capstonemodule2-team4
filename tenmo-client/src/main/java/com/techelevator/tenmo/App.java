@@ -1,13 +1,10 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
-import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.services.TransferService;
 
 import java.math.BigDecimal;
@@ -110,13 +107,13 @@ public class App {
         System.out.println("ID           From/To            Amount");
         System.out.println("--------------------------------------");
         for (Transfer transfer : transfers) {
-            //TODO: change transfer account ID's below to user names displayed
-            //TODO: create account model under Server to access accounts by UserID
 
-            if (transfer.getAccountFrom() == (currentUser.getUser().getId() + 1000)) {
-                System.out.println(transfer.getTransferId() + "         To: " + transfer.getAccountTo() + "           $" + transfer.getAmount());
+            if (accountService.getAccountById(transfer.getAccountFrom()).getUserId() == currentUser.getUser().getId()) {
+                User user = accountService.getUserById(accountService.getAccountById(transfer.getAccountTo()).getUserId());
+                System.out.println(transfer.getTransferId() + "         To: " + user.getUsername() + "           $" + transfer.getAmount());
             } else {
-                System.out.println(transfer.getTransferId() + "         From: " + transfer.getAccountFrom() + "         $" + transfer.getAmount());
+                User user = accountService.getUserById(accountService.getAccountById(transfer.getAccountTo()).getUserId());
+                System.out.println(transfer.getTransferId() + "         From: " + user.getUsername() + "         $" + transfer.getAmount());
             }
         }
 		
