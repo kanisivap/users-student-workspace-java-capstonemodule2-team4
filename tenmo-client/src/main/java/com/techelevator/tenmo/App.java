@@ -122,8 +122,16 @@ public class App {
         }
 
         //Prompt user to input ID of user to transfer to
-        System.out.println("Enter ID of user you are sending to (0 to cancel):");
+        System.out.println("Enter ID of user you are sending to (0 to cancel): ");
         int id = Integer.parseInt(input.next()); //Take user input and store it as new variable, id
+
+        //Continue to prompt user for a valid ID while the input ID is still equivalent to self
+        while (id == currentUser.getUser().getId()) {
+            System.out.println("Cannot send money to self! Please enter a valid ID.");
+            System.out.println("Enter ID of user you are sending to (0 to cancel): ");
+            id = Integer.parseInt(input.next());
+        }
+
         BigDecimal balance = accountService.getBalance(currentUser);
         System.out.println("Enter amount: ");
         BigDecimal amount = new BigDecimal(input.next());
