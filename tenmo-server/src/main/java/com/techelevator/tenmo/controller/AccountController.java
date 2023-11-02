@@ -3,6 +3,7 @@ package com.techelevator.tenmo.controller;
 import javax.validation.Valid;
 
 import com.techelevator.tenmo.dao.AccountDao;
+import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.LoginResponseDto;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller to authenticate users.
@@ -47,6 +50,13 @@ public class AccountController {
         }
     }
 
+    //Method to list user IDs + user names, excluding self
+    @RequestMapping(path = "/account", method = RequestMethod.GET)
+    public List<User> listUsers() {
+
+        return JdbcUserDao.getUsers(); //call the getUsers method to populate list
+    }
+    
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/balance/{id}", method = RequestMethod.PUT)
     public void updateBalance(@PathVariable int id, BigDecimal amount) {
