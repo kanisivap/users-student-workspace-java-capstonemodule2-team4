@@ -128,10 +128,10 @@ public class App {
         System.out.println("Enter amount: ");
         BigDecimal amount = new BigDecimal(input.next());
 		accountService.subtractFromBalance(currentUser, amount);
-
-        accountService.addToBalance(id, amount);
         if(balance.compareTo(accountService.getBalance(currentUser)) == 0){
             System.out.println("Cannot send more money than is in account.");
+        } else {
+            accountService.addToBalance(id, amount);
         }
 	}
 
