@@ -135,6 +135,11 @@ public class App {
         BigDecimal balance = accountService.getBalance(currentUser);
         System.out.println("Enter amount: ");
         BigDecimal amount = new BigDecimal(input.next());
+        while(amount.compareTo(BigDecimal.ZERO) <= 0){
+            System.out.println("Sending amount must be greater than zero.");
+            System.out.println("Enter amount: ");
+            amount = new BigDecimal(input.next());
+        }
 		accountService.subtractFromBalance(currentUser, amount);
         if(balance.compareTo(accountService.getBalance(currentUser)) == 0){
             System.out.println("Cannot send more money than is in account.");
