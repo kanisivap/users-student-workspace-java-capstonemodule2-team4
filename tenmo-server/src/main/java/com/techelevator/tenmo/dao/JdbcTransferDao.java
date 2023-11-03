@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +27,17 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public List<TransferDto> getTransfers() {
+    public List<TransferDto> getTransfers(String username) {
         List<TransferDto> transfersList = new ArrayList<>();
-        String sql = "SELECT * FROM transfer;";
+        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
+                "FROM transfer t " +
+                "JOIN account a ON a.account_id = t.account_from " +
+                "JOIN tenmo_user tu ON tu.user_id = a.user_id " +
+                "JOIN account b ON b.account_id = t.account_to " +
+                "JOIN tenmo_user tu2 ON tu2.user_id = b.user_id " +
+                "WHERE (tu.username = ? OR tu2.username = ?) AND (transfer_status_id = 2 OR transfer_status_id = 3);";
         try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username, username);
             while (results.next()) {
                 TransferDto transfer = mapRowToTransfer(results);
                 transfersList.add(transfer);
@@ -42,11 +49,37 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public TransferDto getTransferById(int transferId) {
-        TransferDto transfer = null;
-        String sql = "SELECT * FROM transfer WHERE transfer_id = ?;";
+    public List<TransferDto> getTransfersByPending(String username) {
+        List<TransferDto> transfersList = new ArrayList<>();
+        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
+                "FROM transfer t " +
+                "JOIN account a ON a.account_id = t.account_from " +
+                "JOIN tenmo_user tu ON tu.user_id = a.user_id " +
+                "WHERE tu.username = ? AND transfer_status_id = 1;";
         try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username);
+            while (results.next()) {
+                TransferDto transfer = mapRowToTransfer(results);
+                transfersList.add(transfer);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+        return transfersList;
+    }
+
+    @Override
+    public TransferDto getTransferById(int transferId, String username) {
+        TransferDto transfer = null;
+        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
+                "FROM transfer t " +
+                "JOIN account a ON a.account_id = t.account_from " +
+                "JOIN tenmo_user tu ON tu.user_id = a.user_id " +
+                "JOIN account b ON b.account_id = t.account_to " +
+                "JOIN tenmo_user tu2 ON tu2.user_id = b.user_id " +
+                "WHERE (tu.username = ? OR tu2.username = ?) AND transfer_id = ?;";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username, username, transferId);
             if (results.next()) {
                 transfer = mapRowToTransfer(results);
             }
@@ -57,7 +90,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public TransferDto createTransfer(TransferDto transferDto) {
+    public TransferDto createTransfer(TransferDto transferDto, String username) {
         String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id," +
                 "account_from, account_to, amount) VALUES (?,?,(SELECT account_id FROM account WHERE user_id = ?),(SELECT account_id FROM account WHERE user_id = ?),?) " +
                 "RETURNING transfer_id;";
@@ -65,7 +98,7 @@ public class JdbcTransferDao implements TransferDao {
         try {
             int transferId = jdbcTemplate.queryForObject(sql, int.class, transferDto.getTransferTypeId(), transferDto.getTransferStatusId(),
                     transferDto.getAccountFrom(), transferDto.getAccountTo(), transferDto.getAmount());
-            result = getTransferById(transferId);
+            result = getTransferById(transferId, username);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         } catch (DataIntegrityViolationException e) {

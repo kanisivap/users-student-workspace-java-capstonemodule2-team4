@@ -6,6 +6,7 @@ import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -17,11 +18,13 @@ import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 
 /**
  * Controller to authenticate users.
  */
+
 @RestController
 public class TransferController {
 
@@ -32,11 +35,37 @@ public class TransferController {
     }
 
     @ResponseStatus(HttpStatus.FOUND)
-    @RequestMapping(path = "/transfer", method = RequestMethod.GET)
-    public List<TransferDto> getTransfers() {
+    @RequestMapping(path = "/transfer/{transferId}", method = RequestMethod.GET)
+    public TransferDto getTransferById(@PathVariable int transferId, Principal principal){
+        TransferDto transfer = null;
+        try{
+            transfer = transferDao.getTransferById(transferId, principal.getName());
+        } catch (DaoException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transfer list not found.");
+        }
+
+        return transfer;
+    }
+
+    @ResponseStatus(HttpStatus.FOUND)
+    @RequestMapping(path = "/transfer/pending", method = RequestMethod.GET)
+    public List<TransferDto> getTransfersByPending(Principal principal) {
         List<TransferDto> transferDtoList = null;
         try {
-            transferDtoList = transferDao.getTransfers();
+            transferDtoList = transferDao.getTransfersByPending(principal.getName());
+        } catch (DaoException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transfer list not found.");
+        }
+
+        return transferDtoList;
+    }
+
+    @ResponseStatus(HttpStatus.FOUND)
+    @RequestMapping(path = "/transfer", method = RequestMethod.GET)
+    public List<TransferDto> getTransfers(Principal principal) {
+        List<TransferDto> transferDtoList = null;
+        try {
+            transferDtoList = transferDao.getTransfers(principal.getName());
         } catch (DaoException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transfer list not found.");
         }
@@ -46,10 +75,10 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/transfer", method = RequestMethod.POST)
-    public void createTransfer(@Valid @RequestBody TransferDto transfer) {
+    public void createTransfer(@Valid @RequestBody TransferDto transfer, Principal principal) {
         TransferDto newTransfer = null;
         try {
-            newTransfer = transferDao.createTransfer(transfer);
+            newTransfer = transferDao.createTransfer(transfer, principal.getName());
             if (newTransfer == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer creation failed.");
             }

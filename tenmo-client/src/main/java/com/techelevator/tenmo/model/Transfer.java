@@ -70,4 +70,11 @@ public class Transfer {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
+
+    @Override
+    public String toString(){
+        String string = "ID: " + this.getTransferId() + "\nFrom: " + this.getAccountFrom() + "\nTo: " + this.getAccountTo() +
+                "\nType: " + this.getTransferTypeId() + "\nStatus: " + this.getTransferStatusId() + "\nAmount: " + this.getAmount();
+        return string;
+    }
 }

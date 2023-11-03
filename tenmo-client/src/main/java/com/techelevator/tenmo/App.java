@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class App {
 
-    private static final String API_BASE_URL = "http://localhost:8080/";
+    private static final String API_BASE_URL = "http://localhost:8080";
 
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
@@ -107,21 +107,52 @@ public class App {
         System.out.println("ID           From/To            Amount");
         System.out.println("--------------------------------------");
         for (Transfer transfer : transfers) {
-
             if (accountService.getAccountById(transfer.getAccountFrom()).getUserId() == currentUser.getUser().getId()) {
                 User user = accountService.getUserById(accountService.getAccountById(transfer.getAccountTo()).getUserId());
                 System.out.println(transfer.getTransferId() + "         To: " + user.getUsername() + "           $" + transfer.getAmount());
-            } else {
-                User user = accountService.getUserById(accountService.getAccountById(transfer.getAccountTo()).getUserId());
-                System.out.println(transfer.getTransferId() + "         From: " + user.getUsername() + "         $" + transfer.getAmount());
+            } else if(accountService.getAccountById(transfer.getAccountTo()).getUserId() == currentUser.getUser().getId()) {
+                User user = accountService.getUserById(accountService.getAccountById(transfer.getAccountFrom()).getUserId());
+                if(transfer.getTransferStatusId() == 3) {
+                    System.out.println(transfer.getTransferId() + "         From: " + user.getUsername() + "         $" + transfer.getAmount() + " *Rejected");
+                } else {
+                    System.out.println(transfer.getTransferId() + "         From: " + user.getUsername() + "         $" + transfer.getAmount());
+                }
             }
         }
-		
+        System.out.println("Please enter transfer ID to view details (0 to cancel): ");
+        int transferId = Integer.parseInt(input.next());
+        if(transferId > 0) {
+            Transfer details = transferService.getTransferById(currentUser,transferId);
+            while(details == null){
+                System.out.println("Please enter a valid transfer ID: ");
+                transferId = Integer.parseInt(input.next());
+                details = transferService.getTransferById(currentUser, transferId);
+            }
+            System.out.println("--------------------------------------");
+            System.out.println("Transfer Details");
+            System.out.println("--------------------------------------");
+            System.out.println(details.toString());
+        }
 	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+        Transfer[] transfers = transferService.getTransfersByPending(currentUser);
+        System.out.println("--------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID           From/To            Amount");
+        System.out.println("--------------------------------------");
+        for (Transfer transfer : transfers) {
+            if (accountService.getAccountById(transfer.getAccountFrom()).getUserId() == currentUser.getUser().getId()) {
+                User user = accountService.getUserById(accountService.getAccountById(transfer.getAccountTo()).getUserId());
+                System.out.println(transfer.getTransferId() + "         To: " + user.getUsername() + "           $" + transfer.getAmount());
+            } else if(accountService.getAccountById(transfer.getAccountTo()).getUserId() == currentUser.getUser().getId()) {
+                User user = accountService.getUserById(accountService.getAccountById(transfer.getAccountFrom()).getUserId());
+                System.out.println(transfer.getTransferId() + "         From: " + user.getUsername() + "         $" + transfer.getAmount());
+            }
+        }
+        System.out.println("Please enter transfer ID to view details (0 to cancel): ");
+        int id = Integer.parseInt(input.next());
 	}
 
 	private void sendBucks() {
@@ -167,7 +198,37 @@ public class App {
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
+        //List all users
+        User[] users = accountService.listUsers(currentUser);
+        System.out.println("--------------------------------------");
+        System.out.println("Users");
+        System.out.println("ID           Name");
+        System.out.println("--------------------------------------");
+        for (User user: users) {
+            System.out.println(user.getId() + "         " + user.getUsername());
+        }
+
+        //Prompt user to input ID of user to request from
+        System.out.println("Enter ID of user you are requesting from (0 to cancel): ");
+        int id = Integer.parseInt(input.next()); //Take user input and store it as new variable, id
+
+        //Continue to prompt user for a valid ID while the input ID is still equivalent to self
+        while (id == currentUser.getUser().getId()) {
+            System.out.println("Cannot request money from self! Please enter a valid ID.");
+            System.out.println("Enter ID of user you are requesting from (0 to cancel): ");
+            id = Integer.parseInt(input.next());
+        }
+
+        BigDecimal balance = accountService.getBalance(currentUser);
+        System.out.println("Enter amount: ");
+        BigDecimal amount = new BigDecimal(input.next());
+        while(amount.compareTo(BigDecimal.ZERO) <= 0){
+            System.out.println("Requesting amount must be greater than zero.");
+            System.out.println("Enter amount: ");
+            amount = new BigDecimal(input.next());
+        }
+            Transfer log = new Transfer(1, 1, id, currentUser.getUser().getId(), amount);
+            transferService.createTransfer(log);
 	}
 
 
