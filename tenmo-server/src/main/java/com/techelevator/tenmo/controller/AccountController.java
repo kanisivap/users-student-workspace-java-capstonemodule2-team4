@@ -25,6 +25,7 @@ import java.util.List;
 /**
  * Controller to authenticate users.
  */
+
 @RestController
 public class AccountController {
 

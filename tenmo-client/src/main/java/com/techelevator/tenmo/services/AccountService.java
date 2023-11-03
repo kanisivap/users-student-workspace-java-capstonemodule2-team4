@@ -29,7 +29,7 @@ public class AccountService {
     public User getUserById(int id){
         User user = null;
         try{
-            user = restTemplate.getForObject(baseUrl + "user/" + id, User.class, HttpMethod.GET);
+            user = restTemplate.getForObject(baseUrl + "/user/" + id, User.class, HttpMethod.GET);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
@@ -39,7 +39,7 @@ public class AccountService {
     public Account getAccountById(int id) {
         Account account = null;
         try{
-            account = restTemplate.getForObject(baseUrl + "account/" + id, Account.class, HttpMethod.GET);
+            account = restTemplate.getForObject(baseUrl + "/account/" + id, Account.class, HttpMethod.GET);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
@@ -49,7 +49,7 @@ public class AccountService {
     public BigDecimal getBalance(AuthenticatedUser user) {
         BigDecimal balance = null;
         try {
-            balance = restTemplate.getForObject(baseUrl + "balance/" + user.getUser().getId(), BigDecimal.class, HttpMethod.GET);
+            balance = restTemplate.getForObject(baseUrl + "/balance/" + user.getUser().getId(), BigDecimal.class, HttpMethod.GET);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
@@ -59,7 +59,7 @@ public class AccountService {
     public boolean addToBalance(int id, BigDecimal amount){
         boolean success = false;
         try{
-            restTemplate.put(baseUrl + "balance/" + id + "/add", amount, HttpMethod.PUT);
+            restTemplate.put(baseUrl + "/balance/" + id + "/add", amount, HttpMethod.PUT);
             success = true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -69,7 +69,7 @@ public class AccountService {
     public boolean subtractFromBalance(AuthenticatedUser user, BigDecimal amount){
         boolean success = false;
         try{
-            restTemplate.put(baseUrl + "balance/" + user.getUser().getId() + "/subtract", amount, HttpMethod.PUT);
+            restTemplate.put(baseUrl + "/balance/" + user.getUser().getId() + "/subtract", amount, HttpMethod.PUT);
             success = true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -86,7 +86,7 @@ public class AccountService {
     public User[] listUsers(AuthenticatedUser user) {
         User[] users = null;
         try {
-            ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "account",
+            ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "/account",
                     HttpMethod.GET, createAuthenticatedUserEntity(user), User[].class);
             users = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
