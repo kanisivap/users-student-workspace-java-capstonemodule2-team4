@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.model;
 
+import com.techelevator.tenmo.services.AccountService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.lang.NonNull;
 
@@ -7,7 +8,9 @@ import java.math.BigDecimal;
 
 public class Transfer {
     private int transferId;
+    private String transferTypeDesc;
     private int transferTypeId;
+    private String transferStatusDesc;
     private int transferStatusId;
     private int accountFrom;
     private int accountTo;
@@ -18,6 +21,16 @@ public class Transfer {
     public Transfer(int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount){
         this.transferTypeId = transferTypeId;
         this.transferStatusId = transferStatusId;
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+        this.amount = amount;
+    }
+
+    public Transfer(int transferTypeId, String transferTypeDesc, int transferStatusId, String transferStatusDesc, int accountFrom, int accountTo, BigDecimal amount){
+        this.transferTypeId = transferTypeId;
+        this.transferTypeDesc = transferTypeDesc;
+        this.transferStatusId = transferStatusId;
+        this.transferStatusDesc = transferStatusDesc;
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
         this.amount = amount;
@@ -39,12 +52,28 @@ public class Transfer {
         this.transferTypeId = transferTypeId;
     }
 
+    public String getTransferTypeDesc() {
+        return transferTypeDesc;
+    }
+
+    public void setTransferTypeDesc(String transferTypeDesc) {
+        this.transferTypeDesc = transferTypeDesc;
+    }
+
     public int getTransferStatusId() {
         return transferStatusId;
     }
 
     public void setTransferStatusId(int transferStatusId) {
         this.transferStatusId = transferStatusId;
+    }
+
+    public String getTransferStatusDesc() {
+        return transferStatusDesc;
+    }
+
+    public void setTransferStatusDesc(String transferStatusDesc) {
+        this.transferStatusDesc = transferStatusDesc;
     }
 
     public int getAccountFrom() {
@@ -71,10 +100,4 @@ public class Transfer {
         this.amount = amount;
     }
 
-    @Override
-    public String toString(){
-        String string = "ID: " + this.getTransferId() + "\nFrom: " + this.getAccountFrom() + "\nTo: " + this.getAccountTo() +
-                "\nType: " + this.getTransferTypeId() + "\nStatus: " + this.getTransferStatusId() + "\nAmount: " + this.getAmount();
-        return string;
-    }
 }
