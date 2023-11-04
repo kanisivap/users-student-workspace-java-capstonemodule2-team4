@@ -75,7 +75,14 @@ public class TransferService {
 
     }
 
-    
+    public void updateTransfer(Transfer transfer, AuthenticatedUser user) {
+        HttpEntity<TransferAuth> entity = createTransferAuthEntity(user, transfer);
+        try {
+            restTemplate.exchange(baseUrl + "/transfer", HttpMethod.PUT, entity, Transfer.class);
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+    }
 
     private HttpEntity<Transfer> createTransferEntity(Transfer transfer) {
         HttpHeaders headers = new HttpHeaders();

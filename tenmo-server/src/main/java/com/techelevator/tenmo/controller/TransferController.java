@@ -89,5 +89,20 @@ public class TransferController {
         return newTransfer;
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @RequestMapping(path = "/transfer", method = RequestMethod.PUT)
+    public TransferDto updateTransfer(@RequestBody TransferAuthDto transferAuthDto, Principal principal) {
+        TransferDto transferDto = transferAuthDto.getTransfer();
+        TransferDto newTransfer = null;
+        try {
+            newTransfer = transferDao.updateTransfer(transferDto, principal.getName());
+            if (newTransfer == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer creation failed.");
+            }
+        } catch (DaoException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transfer creation failed.");
+        }
+        return newTransfer;
+    }
 
 }
