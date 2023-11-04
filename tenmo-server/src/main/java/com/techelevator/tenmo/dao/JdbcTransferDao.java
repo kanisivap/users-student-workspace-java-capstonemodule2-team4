@@ -120,6 +120,26 @@ public class JdbcTransferDao implements TransferDao {
         return result;
     }
 
+    public TransferDto updateTransfer(TransferDto transferDto, String username){
+        TransferDto updatedTransfer = null;
+        String sql = "UPDATE transfer SET transfer_status_id = ? " +
+                "FROM account " +
+                "WHERE (SELECT account_id FROM account WHERE account.user_id = (SELECT user_id FROM tenmo_user WHERE username = ?)) = transfer.account_from AND transfer_id = ?;";
+        int numOfRows = 0;
+            try {
+                numOfRows = jdbcTemplate.update(sql, transferDto.getTransferStatusId(), username, transferDto.getTransferId());
+                if (numOfRows == 0) {
+                    throw new DaoException("Zero rows affected, expected one");
+                }
+                updatedTransfer = getTransferById(transferDto.getTransferId(), username);
+            } catch (CannotGetJdbcConnectionException e) {
+                throw new DaoException("Unable to connect to server or database", e);
+            } catch (DataIntegrityViolationException e) {
+                throw new DaoException("Data integrity violation", e);
+            }
+            return updatedTransfer;
+        }
+
     private TransferDto mapRowToTransfer(SqlRowSet rs) {
         TransferDto transfer = new TransferDto();
         transfer.setTransferId(rs.getInt("transfer_id"));

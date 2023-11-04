@@ -10,4 +10,5 @@ public interface TransferDao {
     List<TransferDto> getTransfers(String username);
     TransferDto getTransferById(int transferId, String username);
     TransferDto createTransfer(TransferDto transferDto, String username);
+    TransferDto updateTransfer(TransferDto transferDto, String username);
 }
