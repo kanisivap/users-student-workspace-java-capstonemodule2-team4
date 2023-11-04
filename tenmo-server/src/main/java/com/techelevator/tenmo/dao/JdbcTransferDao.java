@@ -38,7 +38,8 @@ public class JdbcTransferDao implements TransferDao {
                 "JOIN tenmo_user tu2 ON tu2.user_id = b.user_id " +
                 "JOIN transfer_type tt ON tt.transfer_type_id = t.transfer_type_id " +
                 "JOIN transfer_status ts ON ts.transfer_status_id = t.transfer_status_id " +
-                "WHERE (tu.username = ? OR tu2.username = ?) AND (t.transfer_status_id = 2 OR t.transfer_status_id = 3);";
+                "WHERE (tu.username = ? OR tu2.username = ?) AND (t.transfer_status_id = 2 OR t.transfer_status_id = 3)" +
+                "ORDER BY transfer_id;";
 
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username, username);
@@ -62,7 +63,8 @@ public class JdbcTransferDao implements TransferDao {
                 "JOIN transfer_status ts ON ts.transfer_status_id = t.transfer_status_id " +
                 "JOIN account a ON a.account_id = t.account_from " +
                 "JOIN tenmo_user tu ON tu.user_id = a.user_id " +
-                "WHERE tu.username = ? AND ts.transfer_status_id = 1;";
+                "WHERE tu.username = ? AND ts.transfer_status_id = 1" +
+                "ORDER BY transfer_id;";
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username);
             while (results.next()) {
