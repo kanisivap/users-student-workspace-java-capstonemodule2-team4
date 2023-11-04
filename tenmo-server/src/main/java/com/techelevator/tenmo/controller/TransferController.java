@@ -75,7 +75,8 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/transfer", method = RequestMethod.POST)
-    public void createTransfer(@Valid @RequestBody TransferDto transfer, Principal principal) {
+    public TransferDto createTransfer(@Valid @RequestBody TransferAuthDto transferAuthDto, Principal principal) {
+        TransferDto transfer = transferAuthDto.getTransfer();
         TransferDto newTransfer = null;
         try {
             newTransfer = transferDao.createTransfer(transfer, principal.getName());
@@ -85,6 +86,7 @@ public class TransferController {
         } catch (DaoException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transfer creation failed.");
         }
+        return newTransfer;
     }
 
 

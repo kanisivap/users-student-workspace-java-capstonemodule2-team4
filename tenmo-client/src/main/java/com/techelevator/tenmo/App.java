@@ -197,7 +197,7 @@ public class App {
         } else {
             accountService.addToBalance(id, amount);
             Transfer log = new Transfer(2, 2, currentUser.getUser().getId(), id, amount);
-            transferService.createTransfer(log);
+            transferService.createTransfer(log, currentUser);
         }
 	}
 
@@ -233,6 +233,6 @@ public class App {
             amount = new BigDecimal(input.next());
         }
             Transfer log = new Transfer(1, 1, id, currentUser.getUser().getId(), amount);
-            transferService.createTransfer(log);
+            transferService.createTransfer(log, currentUser);
 	}
 }
