@@ -268,9 +268,11 @@ public class App {
         int choice = Integer.parseInt(input.next());
         switch(choice){
             case 1:
-                boolean success = accountService.subtractFromBalance(currentUser, pending.getAmount());
-                if (success) {
+                BigDecimal balance = accountService.getBalance(currentUser);
+                BigDecimal newBalance = balance.subtract(pending.getAmount());
+                if (newBalance.compareTo(BigDecimal.ZERO) > 0) {
                     pending.setTransferStatusId(2);
+                    accountService.subtractFromBalance(currentUser, pending.getAmount());
                     transferService.updateTransfer(pending, currentUser);
                     accountService.addToBalance(to.getId(), pending.getAmount());
                 } else {
