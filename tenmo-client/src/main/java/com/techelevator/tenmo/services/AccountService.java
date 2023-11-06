@@ -76,6 +76,7 @@ public class AccountService {
     private HttpEntity<AuthenticatedUser> createAuthenticatedUserEntity(AuthenticatedUser user) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(user.getToken());
         return new HttpEntity<>(user, headers);
     }
 
